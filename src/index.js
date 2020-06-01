@@ -354,8 +354,11 @@ function sanitizeHtml(html, options, _recursing) {
             if (a === 'style') {
               try {
                 var abstractSyntaxTree = postcss.parse(name + " {" + value + "}");
-                // always remove font-family
-                abstractSyntaxTree.nodes[0].nodes = abstractSyntaxTree.nodes[0].nodes.filter(n => n.prop !== 'font-family');
+                if (options.disallowedStyles) {
+                  // console.log(options.disallowedStyles);
+                  abstractSyntaxTree.nodes[0].nodes = abstractSyntaxTree.nodes[0].nodes.filter(n => !options.disallowedStyles.includes(n.prop));
+                  // console.log('abstractSyntaxTree.nodes[0].nodes', abstractSyntaxTree.nodes[0].nodes)
+                }
                 var filteredAST = filterCss(abstractSyntaxTree, options.allowedStyles);
 
                 value = stringifyStyleAttributes(filteredAST);
