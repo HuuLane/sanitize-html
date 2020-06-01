@@ -354,6 +354,8 @@ function sanitizeHtml(html, options, _recursing) {
             if (a === 'style') {
               try {
                 var abstractSyntaxTree = postcss.parse(name + " {" + value + "}");
+                // always remove font-family
+                abstractSyntaxTree.nodes[0].nodes = abstractSyntaxTree.nodes[0].nodes.filter(n => n.prop !== 'font-family');
                 var filteredAST = filterCss(abstractSyntaxTree, options.allowedStyles);
 
                 value = stringifyStyleAttributes(filteredAST);
@@ -560,7 +562,8 @@ function sanitizeHtml(html, options, _recursing) {
     if (!allowedStyles) {
       return abstractSyntaxTree;
     }
-
+    // console.log('abstractSyntaxTree', abstractSyntaxTree.nodes[0].nodes);
+    // ('abstractSyntaxTree', abstractSyntaxTree.nodes[0].nodes.filter(n => n.prop !== 'font-family'));
     var filteredAST = cloneDeep(abstractSyntaxTree);
     var astRules = abstractSyntaxTree.nodes[0];
     var selectedRule;
